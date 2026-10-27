@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sri AI Assistant</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="hero">
+        <p class="badge">AI Study Assistant</p>
+        <h1>Sri AI Assistant</h1>
+        <p class="subtitle">Smart study plans for faster learning.</p>
+      </header>
+
+      <main class="app">
+        <section class="panel form-panel">
+          <h2>Create Study Plan</h2>
+          <form id="study-form">
+            <label>
+              Topic
+              <input type="text" id="topic" placeholder="e.g. JavaScript basics" required />
+            </label>
+
+            <div class="row">
+              <label>
+                Focus
+                <select id="focus">
+                  <option value="concepts">Concepts</option>
+                  <option value="revision">Revision</option>
+                  <option value="practice">Practice</option>
+                  <option value="exam">Exam Prep</option>
+                </select>
+              </label>
+
+              <label>
+                Duration (min)
+                <input type="number" id="duration" min="10" max="180" value="30" />
+              </label>
+            </div>
+
+            <label>
+              Level
+              <select id="level">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </label>
+
+            <button type="submit">Generate Plan</button>
+          </form>
+        </section>
+
+        <section class="panel output-panel">
+          <div id="status">Ready to create your study plan.</div>
+          <div id="result"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -1,2 +1,5 @@
-# Sri-ai-assistant-
- Ai study ke liye smart assistant app
+node_modules/
+.env
+.DS_Store
+npm-debug.log*
+coverage/

@@ -1,0 +1,90 @@
+const form = document.getElementById('study-form');
+const result = document.getElementById('result');
+const status = document.getElementById('status');
+
+form.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const payload = {
+    topic: document.getElementById('topic').value,
+    focus: document.getElementById('focus').value,
+    duration: document.getElementById('duration').value,
+    level: document.getElementById('level').value
+  };
+
+  status.textContent = 'Generating your study plan...';
+  result.innerHTML = '';
+
+  try {
+    const response = await fetch('/api/plan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Something went wrong');
+    }
+
+    renderResult(data);
+    status.textContent = 'Study plan ready!';
+  } catch (error) {
+    status.textContent = 'Error';
+    result.innerHTML = `<p class="error">${error.message}</p>`;
+  }
+});
+
+function renderResult(data) {
+  result.innerHTML = `
+    <div class="result-card">
+      <h3>${data.topic}</h3>
+      <p>${data.overview}</p>
+
+      <div class="meta">
+        <span>Focus: ${data.focus}</span>
+        <span>Duration: ${data.duration} min</span>
+        <span>Level: ${data.level}</span>
+      </div>
+
+      <h4>Goals</h4>
+      <ul>${data.goals.map((goal) => `<li>${goal}</li>`).join('')}</ul>
+
+      <h4>Study Plan</h4>
+      <ul>${data.studyPlan.map((item) => `<li><strong>Step ${item.step}:</strong> ${item.title} (${item.duration}) - ${item.detail}</li>`).join('')}</ul>
+
+      <h4>Quick Quiz</h4>
+      <ul>${data.quickQuiz.map((item) => `<li>${item}</li>`).join('')}</ul>
+
+      <h4>Tips</h4>
+      <ul>${data.tips.map((tip) => `<li>${tip}</li>`).join('')}</ul>
+    </div>
+  `;
+}
+
+const initialPlan = {
+  topic: 'Python Basics',
+  overview: 'A beginner-level study plan for Python Basics with a concepts focus and a 30-minute schedule.',
+  goals: [
+    'Understand the basics of Python Basics',
+    'Learn the most useful concepts for concepts study',
+    'Finish a focused session in 30 minutes',
+    'Review with quick recall questions and examples'
+  ],
+  studyPlan: [
+    { step: 1, title: 'Foundation', duration: '8 min', detail: 'Read a beginner-friendly overview of Python Basics and note 3 important points.' },
+    { step: 2, title: 'Concept Build', duration: '11 min', detail: 'Focus on concepts concepts, definitions, and link them with examples from daily life.' },
+    { step: 3, title: 'Practice', duration: '6 min', detail: 'Solve short questions, explain steps in your own words, and test recall without notes.' },
+    { step: 4, title: 'Revision', duration: '5 min', detail: 'Summarize the lesson and list the top 5 takeaways before finishing.' }
+  ],
+  quickQuiz: [
+    'What is the main idea behind Python Basics?',
+    'Which term or formula is most important in this topic?',
+    'Can you explain one example in your own words?'
+  ],
+  tips: ['Use a timer and end every session with a 2-minute recap.']
+};
+
+renderResult(initialPlan);
+status.textContent = 'Demo study plan loaded.';

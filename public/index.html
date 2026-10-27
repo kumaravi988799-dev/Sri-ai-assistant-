@@ -1,0 +1,106 @@
+const express = require('express');
+const path = require('path');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+function buildStudyPlan(topic, focus, duration, level) {
+  const safeTopic = (topic || 'General learning').trim();
+  const safeFocus = focus || 'general';
+  const safeDuration = Number(duration) > 0 ? Number(duration) : 30;
+  const safeLevel = level || 'beginner';
+
+  const conceptMap = [
+    `Core idea of ${safeTopic}`,
+    `Important keywords and definitions`,
+    `Practical examples and real-world use`,
+    `Short revision and recall exercise`
+  ];
+
+  const goals = [
+    `Understand the basics of ${safeTopic}`,
+    `Learn the most useful concepts for ${safeFocus} study`,
+    `Finish a focused session in ${safeDuration} minutes`,
+    `Review with quick recall questions and examples`
+  ];
+
+  const studyPlan = [
+    {
+      step: 1,
+      title: 'Foundation',
+      duration: `${Math.max(8, Math.round(safeDuration * 0.25))} min`,
+      detail: `Read a beginner-friendly overview of ${safeTopic} and note 3 important points.`
+    },
+    {
+      step: 2,
+      title: 'Concept Build',
+      duration: `${Math.max(10, Math.round(safeDuration * 0.35))} min`,
+      detail: `Focus on ${safeFocus} concepts, definitions, and link them with examples from daily life.`
+    },
+    {
+      step: 3,
+      title: 'Practice',
+      duration: `${Math.max(8, Math.round(safeDuration * 0.2))} min`,
+      detail: `Solve short questions, explain steps in your own words, and test recall without notes.`
+    },
+    {
+      step: 4,
+      title: 'Revision',
+      duration: `${Math.max(5, Math.round(safeDuration * 0.2))} min`,
+      detail: `Summarize the lesson and list the top 5 takeaways before finishing.`
+    }
+  ];
+
+  const quickQuiz = [
+    `What is the main idea behind ${safeTopic}?`,
+    `Which term or formula is most important in this topic?`,
+    `Can you explain one example in your own words?`,
+    `What would you revise again before the next session?`
+  ];
+
+  const tips = [
+    'Use a timer and end every session with a 2-minute recap.',
+    'Write short notes in simple language instead of copying large paragraphs.',
+    'Practice recall before looking at your notes again.',
+    'Repeat hard questions after 24 hours for better retention.'
+  ];
+
+  return {
+    topic: safeTopic,
+    focus: safeFocus,
+    duration: safeDuration,
+    level: safeLevel,
+    overview: `A ${safeLevel}-level study plan for ${safeTopic} with a ${safeFocus} focus and a ${safeDuration}-minute schedule.`,
+    goals,
+    conceptMap,
+    studyPlan,
+    quickQuiz,
+    tips
+  };
+}
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Sri AI Assistant backend is running.' });
+});
+
+app.post('/api/plan', (req, res) => {
+  const { topic, focus, duration, level } = req.body || {};
+
+  if (!topic || !String(topic).trim()) {
+    return res.status(400).json({ error: 'Topic is required.' });
+  }
+
+  const plan = buildStudyPlan(topic, focus, duration, level);
+  return res.json(plan);
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+app.listen(PORT, () => {
+  console.log(`Sri AI Assistant running on http://localhost:${PORT}`);
+});
